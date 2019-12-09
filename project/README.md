@@ -17,7 +17,12 @@ Diretório criado para armazenar meu trabalho final para o componente curricular
 
 ## Informações sobre o projeto ##
 
-AA
+|  **Object** |                              **Action**                              |
+|:-----------:|:--------------------------------------------------------------------:|
+| Pickle Rick |                                Rolling                               |
+|  Charizard  |                              Action set                              |
+|   Psyduck   | When selected option ("Get in degree course") he becomes Fat Psyduck |
+| Fat Psyduck |     When selected option ("Make a bariatric") he becomes Psyduck     |
 
 ### Ferramentas utilizadas ###
 
