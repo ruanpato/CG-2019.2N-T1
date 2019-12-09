@@ -1,4 +1,4 @@
-# Ball [:link:](https://github.com/ruanpato/gex107/tree/master/cube) #
+# Ball [:link:](https://github.com/ruanpato/CG-2019.2N-T1/tree/master/cube) #
 
 Repositório criado para armazenar meus exercícios e trabalho referentes ao componente curricular obrigatório Computação Gráfica cursado no de Bacharel em Ciência da computação na Universidade Federal da Fronteira Sul, campus Chapecó/SC.
 
@@ -11,6 +11,8 @@ Repositório criado para armazenar meus exercícios e trabalho referentes ao com
 
 ## Ferramentas utilizadas ##
 
+- [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) - Cascading Style Sheets;
+- [HTML](https://en.wikipedia.org/wiki/HTML) - HyperText Markup Language;
 - [three.js](https://threejs.org/) - A javascript/API cross-browser library to create and show 3D graphs animated.
 
 ## Autores ##
