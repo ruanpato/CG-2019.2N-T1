@@ -7,11 +7,11 @@ import { GLTFLoader } from "https://threejsfundamentals.org/threejs/resources/th
 //import { SkeletonUtils } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples//jsm/utils/SkeletonUtils.js";
 import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js";
 
-var pickle, mew, fatPsyduck;
+var pickle, mew, fatPsyduck, bikini, spongeBob;
 var container, clock, gui, mixer, actions, activeAction, controls, rayCaster;
 var camera, scene, renderer, mew, light;
 
-var controlPos = {x: 35, y: 27, z: 0}//, cameraPos = {x: 70, y: 40, z: 70};
+var controlPos = {x: 440, y: 197, z: 10}//, cameraPos = {x: 70, y: 40, z: 70};
 var api = {Action: 'Static Pose'};
 var pickleRoll = {RollX: false, RollY: false, RollZ: false}, rotation = {RollX: 0.0, RollY: 0.0, RollZ: 0.0};
 
@@ -63,9 +63,9 @@ function init() {
     // To get clicked position
     rayCaster = new THREE.Raycaster();
     // Camera "config"
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(70, 54, 20);
-    camera.lookAt(new THREE.Vector3(0, 30, 0));
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 50000);
+    camera.position.set(500, 297, 10);
+    camera.lookAt(new THREE.Vector3(440, 197, 10));
 
     // Scene "config"
     scene = new THREE.Scene();
@@ -106,12 +106,33 @@ function init() {
     */
     // load mew model
     loader = new GLTFLoader();
+    // Load "Scenario"
+    loader.load('models/bikini/scene.gltf', function ( gltf ) {
+        bikini = gltf
+        // Adding on scene object.scene
+        bikini.scene.position.set(0, 130, 0);
+        bikini.scene.scale.set(60, 60, 60);
+        scene.add(bikini.scene);
+    }, undefined, function ( e ) {
+        console.error( e );
+    } );
+    // Load SpongeBob undergraduate
+    loader.load('models/spongeBob/scene.gltf', function ( gltf ) {
+        spongeBob = gltf
+        // Adding on scene object.scene
+        spongeBob.scene.position.set(520, 140, -60);
+        spongeBob.scene.scale.set(80, 80, 80);
+        scene.add(spongeBob.scene);
+    }, undefined, function ( e ) {
+        console.error( e );
+    } );
     // Load pickle rick
     loader.load('models/pickle_rick/scene.glb', function ( gltf ) {
         pickle = gltf
         // Adding on scene object.scene
-        pickle.scene.position.set(35, 27, 0);
-        pickle.scene.scale.set(1, 1, 1);
+        pickle.scene.position.set(520, 127, 20);
+        pickle.scene.scale.set(10, 10, 10);
+        pickle.scene.rotateY(Math.PI/2);
         scene.add(pickle.scene);
     }, undefined, function ( e ) {
         console.error( e );
@@ -120,17 +141,20 @@ function init() {
     loader.load('models/fatPsyduck/scene.glb', function ( gltf ) {
         fatPsyduck = gltf
         // Adding on scene object.scene
-        fatPsyduck.scene.position.set(75, 27, 0);
-        fatPsyduck.scene.scale.set(10, 10, 10);
+        fatPsyduck.scene.position.set(-350, 294, 200);
+        fatPsyduck.scene.scale.set(90, 90, 90);
+        fatPsyduck.scene.rotateY(Math.PI/2);
         scene.add(fatPsyduck.scene);
     }, undefined, function ( e ) {
         console.error( e );
     } );
+    // Mew load
     loader.load('models/mew/scene.glb', function ( gltf ) {
         // Adding on scene object.scene
         mew = gltf
-        mew.scene.position.set(0, 33, 0);
-        mew.scene.scale.set(0.08, 0.08, 0.08);
+        mew.scene.position.set(440, 197, 10);
+        mew.scene.scale.set(0.4, 0.4, 0.4);
+        mew.scene.rotateY(Math.PI/2);
         scene.add(mew.scene);
         // Create GUI
         createGUI(mew.scene, mew.animations);
