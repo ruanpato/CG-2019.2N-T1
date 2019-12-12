@@ -1,133 +1,176 @@
 import * as THREE from "https://threejsfundamentals.org/threejs/resources/threejs/r110/build/three.module.js";
+
 import Stats from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/stats.module.js";
-import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js";
 import { GUI } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/dat.gui.module.js";
+
 import { GLTFLoader } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/GLTFLoader.js";
+//import { SkeletonUtils } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples//jsm/utils/SkeletonUtils.js";
+import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js";
 
-var container, stats, clock, gui, mixer, actions, activeAction, previousAction;
-var camera, scene, renderer, charizard, fatPsyduck, pickleRick, face, controls;
+var pickle, charizard;
+var container, stats, clock, gui, mixer, actions, activeAction, previousAction, controls;
+var camera, scene, renderer, charizard, face, light;
 
-var api = { state: 'Walking' };
+var cameraOrbitVision = {charizard: true, pickle: false};
+var api = {Action: 'Take 01'};
+var pickleRoll = {RollX: false, RollY: false, RollZ: false}, rotation = {RollX: 0.0, RollY: 0.0, RollZ: 0.0};
+
 init();
 animate();
 function init() {
-    container = document.createElement( 'div' );
-    document.body.appendChild( container );
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 100 );
-    camera.position.set( - 5, 3, 10 );
-    camera.lookAt( new THREE.Vector3( 0, 2, 0 ) );
+    // Container "config"
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    //document.addEventListener('keydown', ondDocumentKeyDown, false);
+
+    // Camera "config"
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(70, 40, 70);
+//    camera.lookAt(new THREE.Vector3(0, 2, 0));
+
+    // Scene "config"
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xe0e0e0 );
-    scene.fog = new THREE.Fog( 0xe0e0e0, 20, 100 );
+    scene.background = new THREE.Color(0x87ceeb);
+    //scene.fog = new THREE.Fog(0x87ceeb, 20, 10);
+
     clock = new THREE.Clock();
-    // lights
-    var light = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-    light.position.set( 0, 20, 0 );
-    scene.add( light );
-    light = new THREE.DirectionalLight( 0xffffff );
-    light.position.set( 0, 20, 10 );
-    scene.add( light );
-    // ground
-    var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+    
+    // Light "config"
+        // Hemisphere light
+    light = new THREE.HemisphereLight(0xffffff, 0x444444);
+    light.position.set(0, 20, 0);
+    scene.add(light);
+        // Direction light
+    light = new THREE.DirectionalLight(0xffffff);
+    light.position.set(0, 20, 10);
+    scene.add(light);
+    var loader = new THREE.TextureLoader();
+    // ground define
+    var groundTexture = loader.load('textures/grasslight-big.jpg');
+    groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set( 25, 25 );
+    groundTexture.anisotropy = 16;
+    groundTexture.encoding = THREE.sRGBEncoding;
+    var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+    var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
+    mesh.position.y = - 250;
     mesh.rotation.x = - Math.PI / 2;
+    mesh.receiveShadow = true;
     scene.add( mesh );
-    var grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
+    
+
+    // Add Grid (If removes get )
+    /*var grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
     grid.material.opacity = 0.2;
     grid.material.transparent = true;
     scene.add( grid );
-    // charizard
-    var loader = new GLTFLoader();
-    loader.load( 'charizards/gltf/RobotExpressive/RobotExpressive.glb', function ( gltf ) {
-        charizard = gltf.scene;
-        scene.add( charizard );
-        createGUI( charizard, gltf.animations );
+    */
+    // load Charizard model
+    loader = new GLTFLoader();
+    loader.load('models/charizard/scene.glb', function ( gltf ) {
+        // Adding on scene object.scene
+        charizard = gltf
+        charizard.scene.position.set(-10, 0, -10);
+        charizard.scene.scale.set(0.4, 0.4, 0.4);
+        scene.add(charizard.scene);
+        // Create GUI
+        createGUI(charizard.scene, charizard.animations);
     }, undefined, function ( e ) {
         console.error( e );
     } );
+    // Load pickle rick
+    loader.load('models/pickle_rick/scene.glb', function ( gltf ) {
+        pickle = gltf
+        // Adding on scene object.scene
+        pickle.scene.position.set(35, 10, 0);
+        pickle.scene.scale.set(1, 1, 1);
+        scene.add(pickle.scene);
+    }, undefined, function ( e ) {
+        console.error( e );
+    } );
+
+
+    // Renderer "Config"
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.gammaOutput = true;
     renderer.gammaFactor = 2.2;
+
+    // Controls
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.maxPolarAngle = Math.PI * 0.5;
+
+    controls.target.set(-10, 10, -10);
+    controls.enablePan = false;
+
+    // Adding renderer
     container.appendChild( renderer.domElement );
+    // Event Listener
     window.addEventListener( 'resize', onWindowResize, false );
-    // stats
-    stats = new Stats();
-    container.appendChild( stats.dom );
 }
-function createGUI( charizard, animations ) {
-    var states = [ 'Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing' ];
-    var emotes = [ 'Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp' ];
+
+function createGUI(model, animations){
     gui = new GUI();
-    mixer = new THREE.AnimationMixer( charizard );
-    actions = {};
-    for ( var i = 0; i < animations.length; i ++ ) {
-        var clip = animations[ i ];
-        var action = mixer.clipAction( clip );
-        actions[ clip.name ] = action;
-        if ( emotes.indexOf( clip.name ) >= 0 || states.indexOf( clip.name ) >= 4 ) {
-            action.clampWhenFinished = true;
-            action.loop = THREE.LoopOnce;
-        }
+    mixer = new THREE.AnimationMixer(model);
+    actions = {}
+    var actionsNames = ['Stopped', 'Take 01']
+    for(var i = 0; i < animations.length; i++){
+        var clip = animations[i];
+        var action = mixer.clipAction(clip);
+        actions[clip.name] = action;
+        actions[i] = clip.name;
     }
-    // states
-    var statesFolder = gui.addFolder( 'States' );
-    var clipCtrl = statesFolder.add( api, 'state' ).options( states );
-    clipCtrl.onChange( function () {
-        fadeToAction( api.state, 0.5 );
-    } );
-    statesFolder.open();
-    // emotes
-    var emoteFolder = gui.addFolder( 'Emotes' );
-    function createEmoteCallback( name ) {
-        api[ name ] = function () {
-            fadeToAction( name, 0.2 );
-            mixer.addEventListener( 'finished', restoreState );
-        };
-        emoteFolder.add( api, name );
-    }
-    function restoreState() {
-        mixer.removeEventListener( 'finished', restoreState );
-        fadeToAction( api.state, 0.2 );
-    }
-    for ( var i = 0; i < emotes.length; i ++ ) {
-        createEmoteCallback( emotes[ i ] );
-    }
-    emoteFolder.open();
-    // expressions
-    face = charizard.getObjectByName( 'Head_2' );
-    var expressions = Object.keys( face.morphTargetDictionary );
-    var expressionFolder = gui.addFolder( 'Expressions' );
-    for ( var i = 0; i < expressions.length; i ++ ) {
-        expressionFolder.add( face.morphTargetInfluences, i, 0, 1, 0.01 ).name( expressions[ i ] );
-    }
-    activeAction = actions[ 'Walking' ];
+    action.clampWhenFinished = true;
+    action.loop = THREE.LoopOnce;
+
+    var actionsGUI = gui.addFolder('Charizard Actions');
+    var actionSelect = actionsGUI.add(api, 'Action').options(actionsNames)
+    
+    actionSelect.onChange(function(){
+
+        activeAction = actions[api['Action']]
+        if(activeAction != actions['Take 01'])
+            actions['Take 01'].stop();
+        else
+            activeAction.play()
+    });
+
+    actionsGUI.open();
+
+    activeAction = actions['Take 01'];
+    if(activeAction != actions['Take 01'])
+        activeAction.stop();
     activeAction.play();
-    expressionFolder.open();
+
+    // pickle
+    actionsGUI = gui.addFolder('Pickle Roll');
+    activeAction = actionsGUI.add(pickleRoll, 'RollX');
+    activeAction = actionsGUI.add(pickleRoll, 'RollY');
+    activeAction = actionsGUI.add(pickleRoll, 'RollZ');
+
 }
-function fadeToAction( name, duration ) {
-    previousAction = activeAction;
-    activeAction = actions[ name ];
-    if ( previousAction !== activeAction ) {
-        previousAction.fadeOut( duration );
-    }
-    activeAction
-        .reset()
-        .setEffectiveTimeScale( 1 )
-        .setEffectiveWeight( 1 )
-        .fadeIn( duration )
-        .play();
-}
+
+//
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
+
 //
 function animate() {
-    var dt = clock.getDelta();
-    if ( mixer ) mixer.update( dt );
+    // Pickle rotation
+    if(pickleRoll['RollX'] == true)
+        pickle.scene.rotateX( (rotation['RollX'] += 0.01) )
+    if(pickleRoll['RollY'] == true)
+        pickle.scene.rotateY( (rotation['RollY'] += 0.01) )
+    if(pickleRoll['RollZ'] == true)
+        pickle.scene.rotateZ( (rotation['RollZ'] += 0.01) )
+
+    var deltaSeconds = clock.getDelta();
+    if ( mixer ) mixer.update( deltaSeconds );
+    controls.update(dt)
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
-    stats.update();
 }

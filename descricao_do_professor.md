@@ -37,6 +37,9 @@ entrega do trabalho.
 
 ## Descrição ##
 
+<https://ruanpato.github.io/CG-2019.2N-T1/>
+[Informações](https://github.com/ruanpato/CG-2019.2N-T1/blob/master/README.md).
+
 O trabalho é individual, entretanto ele pode ser feito em dupla se e somente se a aplicação gráfica contiver algum elemento interativo. Entende-se por interativo um elemento na tela que responda a comandos do teclado ou do mouse, ex.: mover para direita e esquerda, cima e baixo. Implementar uma aplicação gráfica usando Three.js
 seguindo uma das temárias:
 

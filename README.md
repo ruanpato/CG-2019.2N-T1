@@ -17,12 +17,14 @@ Diretório criado para armazenar meu trabalho final para o componente curricular
 
 ## Informações sobre o projeto ##
 
+<https://ruanpato.github.io/CG-2019.2N-T1/>
+
 |  **Object** |                              **Action**                              |
 |:-----------:|:--------------------------------------------------------------------:|
 | Pickle Rick |                                Rolling                               |
 |  Charizard  |                              Action set                              |
-|   Psyduck   | When selected option ("Get in degree course") he becomes Fat Psyduck |
-| Fat Psyduck |     When selected option ("Make a bariatric") he becomes Psyduck     |
+
+[Descrição](https://github.com/ruanpato/CG-2019.2N-T1/blob/master/descricao_do_professor.md).
 
 ### Ferramentas utilizadas ###
 
