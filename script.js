@@ -162,15 +162,15 @@ function onWindowResize() {
 function animate() {
     // Pickle rotation
     if(pickleRoll['RollX'] == true)
-        pickle.scene.rotateX( (rotation['RollX'] += 0.01) )
+        pickle.scene.rotateX( (rotation['RollX'] += 0.0001) )
     if(pickleRoll['RollY'] == true)
-        pickle.scene.rotateY( (rotation['RollY'] += 0.01) )
+        pickle.scene.rotateY( (rotation['RollY'] += 0.0001) )
     if(pickleRoll['RollZ'] == true)
-        pickle.scene.rotateZ( (rotation['RollZ'] += 0.01) )
+        pickle.scene.rotateZ( (rotation['RollZ'] += 0.0001) )
 
     var deltaSeconds = clock.getDelta();
     if ( mixer ) mixer.update( deltaSeconds );
-    controls.update(dt)
+    controls.update(deltaSeconds)
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
 }
