@@ -11,7 +11,7 @@ var pickle, mew, fatPsyduck;
 var container, clock, gui, mixer, actions, activeAction, controls, rayCaster;
 var camera, scene, renderer, mew, light;
 
-var cameraOrbitVision = {mew: true, pickle: false};
+var controlPos = {x: 35, y: 27, z: 0}//, cameraPos = {x: 70, y: 40, z: 70};
 var api = {Action: 'Static Pose'};
 var pickleRoll = {RollX: false, RollY: false, RollZ: false}, rotation = {RollX: 0.0, RollY: 0.0, RollZ: 0.0};
 
@@ -19,44 +19,53 @@ const KEY ={
     W: 87,
     A: 65,
     S: 83,
-    D: 68
+    D: 68, 
+    SHIFT:16,
+    CTRL: 17
 }
 
 
 init();
 animate();
-/*
-function ondDocumentKeyDown(event){
+
+function onDocumentKeyDown(event){
     var keyCode = event.keyCode;
     var lookAtVector = new THREE.Vector3(0,0, -1);
     lookAtVector.applyQuaternion(camera.quaternion);
-    console.log(lookAtVector)
     switch(keyCode){
+        case KEY.CTRL:
+            controls.target.set(controlPos['x'], (controlPos['y']-=2), controlPos['z']);
+            break;
+        case KEY.SHIFT:
+            controls.target.set(controlPos['x'], (controlPos['y']+=2), controlPos['z']);
+            break;
         case KEY.A:
-            if(lookAtVector['x'] > 0)
-                lookAtVector['x'] -= 1
+            controls.target.set((controlPos['x']-=2), controlPos['y'], controlPos['z']);
             break;
         case KEY.D:
+            controls.target.set((controlPos['x']+=2), controlPos['y'], controlPos['z']);
             break;
         case KEY.S:
+            controls.target.set(controlPos['x'], (controlPos['y']), (controlPos['z']-=2));
             break;
         case KEY.W:
+            controls.target.set(controlPos['x'], (controlPos['y']), (controlPos['z']+=2));
             break;
     }
-}*/
+}
 
 function init() {
     // Container "config"
     container = document.createElement('div');
     document.body.appendChild(container);
-    //document.addEventListener('keydown', ondDocumentKeyDown, false);
+    document.addEventListener('keydown',onDocumentKeyDown,false);
 
     // To get clicked position
     rayCaster = new THREE.Raycaster();
     // Camera "config"
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(70, 40, 70);
-    camera.lookAt(new THREE.Vector3(0, 10, 0));
+    camera.position.set(70, 54, 20);
+    camera.lookAt(new THREE.Vector3(0, 30, 0));
 
     // Scene "config"
     scene = new THREE.Scene();
@@ -83,7 +92,7 @@ function init() {
     groundTexture.encoding = THREE.sRGBEncoding;
     var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
     var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
-    mesh.position.y = - 250;
+    mesh.position.y = 0;
     mesh.rotation.x = - Math.PI / 2;
     mesh.receiveShadow = true;
     scene.add( mesh );
@@ -101,7 +110,7 @@ function init() {
     loader.load('models/pickle_rick/scene.glb', function ( gltf ) {
         pickle = gltf
         // Adding on scene object.scene
-        pickle.scene.position.set(35, 10, 0);
+        pickle.scene.position.set(35, 27, 0);
         pickle.scene.scale.set(1, 1, 1);
         scene.add(pickle.scene);
     }, undefined, function ( e ) {
@@ -111,7 +120,7 @@ function init() {
     loader.load('models/fatPsyduck/scene.glb', function ( gltf ) {
         fatPsyduck = gltf
         // Adding on scene object.scene
-        fatPsyduck.scene.position.set(75, 0, 0);
+        fatPsyduck.scene.position.set(75, 27, 0);
         fatPsyduck.scene.scale.set(10, 10, 10);
         scene.add(fatPsyduck.scene);
     }, undefined, function ( e ) {
@@ -120,7 +129,7 @@ function init() {
     loader.load('models/mew/scene.glb', function ( gltf ) {
         // Adding on scene object.scene
         mew = gltf
-        mew.scene.position.set(0, 10, 0);
+        mew.scene.position.set(0, 33, 0);
         mew.scene.scale.set(0.08, 0.08, 0.08);
         scene.add(mew.scene);
         // Create GUI
@@ -142,7 +151,7 @@ function init() {
     controls = new OrbitControls(camera, renderer.domElement);
     controls.maxPolarAngle = Math.PI * 0.5;
 
-    controls.target.set(-10, 10, -10);
+    controls.target.set(controlPos['x'], controlPos['y'], controlPos['z']);
     controls.enablePan = false;
 
     // Adding renderer
